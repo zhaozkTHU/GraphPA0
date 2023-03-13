@@ -108,6 +108,26 @@ public:
     Vector3f color;
     void draw(Image& img) override {
         // TODO: Implement Algorithm to draw a Circle
+        int x = 0, y = radius;
+        double d = 1.25 - radius;
+        while (x <= y) {
+            img.SetPixel(cx + x, cy + y, color); 
+            img.SetPixel(cx + x, cy - y, color); 
+            img.SetPixel(cx - x, cy + y, color); 
+            img.SetPixel(cx - x, cy - y, color);
+            img.SetPixel(cx + y, cy + x, color);
+            img.SetPixel(cx + y, cy - x, color);
+            img.SetPixel(cx - y, cy + x, color);
+            img.SetPixel(cx - y, cy - x, color);
+            if (d < 0) {
+                d += 2 * x + 3;
+            }
+            else {
+                d += 2 * (x - y) + 5;
+                y--;
+            }
+            x++;
+        }
         printf("Draw a circle with center (%d, %d) and radius %d using color (%f, %f, %f)\n", cx, cy, radius,
             color.x(), color.y(), color.z());
     }
@@ -120,6 +140,27 @@ public:
     Vector3f color;
     void draw(Image& img) override {
         // TODO: Flood fill
+        int width = img.Width();
+        int height = img.Height();
+        Vector3f oldColor = img.GetPixel(cx, cy);
+        std::queue<std::pair<int, int>> q;
+        q.push(std::make_pair(cx, cy));
+        while (!q.empty()) {
+            std::pair<int, int> p = q.front();
+            q.pop();
+            int x = p.first, y = p.second;
+            if (x < 0 || x >= width || y < 0 || y >= height) {
+                continue;
+            }
+            if (img.GetPixel(x, y) != oldColor) {
+                continue;
+            }
+            img.SetPixel(x, y, color);
+            q.push(std::make_pair(x + 1, y));
+            q.push(std::make_pair(x - 1, y));
+            q.push(std::make_pair(x, y + 1));
+            q.push(std::make_pair(x, y - 1));
+        }
         printf("Flood fill source point = (%d, %d) using color (%f, %f, %f)\n", cx, cy,
             color.x(), color.y(), color.z());
     }

@@ -32,8 +32,15 @@ public:
             end.x = xA; end.y = yA;
         }
         if (start.x == end.x) {
-            for (int y = start.y; y <= end.y; y++) {
-                img.SetPixel(start.x, y, color);
+            if (start.y > end.y) {
+                for (int y = end.y; y <= start.y; y++) {
+                    img.SetPixel(start.x, y, color);
+                }
+            }
+            else {
+                for (int y = start.y; y <= end.y; y++) {
+                    img.SetPixel(start.x, y, color);
+                }
             }
             return;
         }
@@ -46,29 +53,48 @@ public:
         int dx = end.x - start.x;
         int dy = end.y - start.y;
         double k = double(dy) / double(dx);
-        double e = -0.5;
-        if (k <= 1 && k >= -1) {
-            int x = start.x, y = start.y;
-            while (x <= end.x) {
+        if (k <= 1 && k > 0) {
+            double e = -0.5;
+            for (int x = start.x, y = start.y; x <= end.x; x++) {
                 img.SetPixel(x, y, color);
                 e += k;
                 if (e >= 0) {
                     y++;
                     e -= 1;
                 }
-                x++;
             }
         }
-        else {
-            int x = start.x, y = start.y;
-            while (y <= end.y) {
+        else if (k > 1) {
+            double e = -0.5;
+            for (int x = start.x, y = start.y; y <= end.y; y++) {
                 img.SetPixel(x, y, color);
                 e += 1 / k;
                 if (e >= 0) {
                     x++;
                     e -= 1;
                 }
-                y++;
+            }
+        }
+        else if (k < 0 && k >= -1) {
+            double e = -0.5;
+            for (int x = start.x, y = start.y; x <= end.x; x++) {
+                img.SetPixel(x, y, color);
+                e -= k;
+                if (e >= 0) {
+                    y--;
+                    e -= 1;
+                }
+            }
+        }
+        else if (k < -1) {
+            double e = -0.5;
+            for (int x = start.x, y = start.y; y >= end.y; y--) {
+                img.SetPixel(x, y, color);
+                e -= 1 / k;
+                if (e >= 0) {
+                    x++;
+                    e -= 1;
+                }
             }
         }
     }
